@@ -140,6 +140,8 @@ function showView(view, params={}){
   $('hdr-title').textContent = TITLES[view]
     || (view==='comic' ? S.comic?.title||'详情' : S.chapter?.chapterName||'阅读');
 
+  refreshUpdateBar(); // hide the update banner in the reader, re-show it elsewhere
+
   if(view==='home') initHome();
   else if(view==='search') setTimeout(()=>{ const i=$('sinput'); if(i)i.focus(); },120);
   else if(view==='history') loadHistory();
@@ -475,16 +477,24 @@ function lazyImgs(root){
    the freshest source code is served.
 ── */
 let swWaiting = null;
-let swUpdating = false; // true once the user opts in, so controllerchange → reload
+let swUpdating = false;   // true once the user opts in, so controllerchange → reload
+let updatePending = false; // a new version is waiting to be applied
 
 function showUpdateBar(){
+  updatePending = true;
+  refreshUpdateBar();
+}
+
+// Show the banner only outside the reader — never cover the manga while reading.
+// Called by showView() too, so leaving the reader re-reveals a pending update.
+function refreshUpdateBar(){
   const bar = $('update-bar');
-  if(bar) bar.classList.add('show');
+  if(bar) bar.classList.toggle('show', updatePending && S.view !== 'reader');
 }
 
 window.applyUpdate = function(){
-  const bar = $('update-bar');
-  if(bar) bar.classList.remove('show');
+  updatePending = false;
+  refreshUpdateBar();
   swUpdating = true;
   if(swWaiting){
     swWaiting.postMessage({ type:'SKIP_WAITING' });
