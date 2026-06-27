@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Combobox">
+<meta name="theme-color" content="#111111">
+<title>Combobox</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23e53935'/><text x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='sans-serif' fill='white'>C</text></svg>">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Password Gate -->
+<div id="gate">
+  <div id="gate-logo">Combobox</div>
+  <div id="gate-sub">请输入访问密码</div>
+  <input id="pinput" type="password" placeholder="••••••" autocomplete="off"
+         onkeydown="if(event.key==='Enter')checkPass()">
+  <button id="gate-btn" onclick="checkPass()">进入</button>
+  <div id="gate-err"></div>
+</div>
+
+<div id="shell">
+  <div id="hdr">
+    <button id="btn-back" onclick="goBack()" aria-label="返回">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div id="hdr-title">Combobox</div>
+    <button id="btn-search-icon" onclick="nav('search')" aria-label="搜索">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+  </div>
+
+  <div id="pbar"></div>
+
+  <div id="content">
+    <!-- Home -->
+    <div id="v-home" class="view on">
+      <div id="home-body"><div class="spin-wrap"><div class="spin"></div><span>加载中…</span></div></div>
+    </div>
+
+    <!-- Search -->
+    <div id="v-search" class="view">
+      <div class="sbar">
+        <div class="sbar-inner">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--txt3);flex-shrink:0" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="sinput" type="search" placeholder="搜索…" autocomplete="off"
+                 onkeydown="if(event.key==='Enter')startSearch()">
+          <button class="sbtn" onclick="startSearch()">搜索</button>
+        </div>
+      </div>
+      <div id="search-body">
+        <div class="empty">
+          <div class="empty-ic"><svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <div>输入标题搜索</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail -->
+    <div id="v-comic" class="view">
+      <div id="comic-body"><div class="spin-wrap"><div class="spin"></div></div></div>
+    </div>
+
+    <!-- Reader -->
+    <div id="v-reader" class="view" onclick="toggleTbar()">
+      <div id="reader-pages"></div>
+    </div>
+
+    <!-- History -->
+    <div id="v-history" class="view">
+      <div id="history-body">
+        <div class="empty">
+          <div class="empty-ic"><svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+          <div>暂无阅读记录</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reader toolbar -->
+  <div id="rtbar">
+    <button id="rt-prev" onclick="chNav('prev')">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      上一章
+    </button>
+    <div id="rt-prog">— / —</div>
+    <button id="rt-next" onclick="chNav('next')">
+      下一章
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+  <nav id="nav">
+    <button class="nb on" id="nb-home" onclick="nav('home')">
+      <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>首页
+    </button>
+    <button class="nb" id="nb-search" onclick="nav('search')">
+      <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>搜索
+    </button>
+    <button class="nb" id="nb-history" onclick="nav('history')">
+      <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>历史
+    </button>
+  </nav>
+</div>
+
+<!-- Update banner (PWA new-version prompt) -->
+<div id="update-bar">
+  <span id="update-txt">发现新版本</span>
+  <button id="update-btn" onclick="applyUpdate()">立即更新</button>
+</div>
+
+<div id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
