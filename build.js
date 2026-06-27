@@ -42,6 +42,7 @@ async function build() {
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
+  // ── 1. Assemble the single-file app: inline CSS + JS into index.html ──────────
   let src = fs.readFileSync(SRC, 'utf8');
   const css = fs.readFileSync(CSS, 'utf8');
   const js  = fs.readFileSync(JS, 'utf8');
@@ -59,6 +60,7 @@ async function build() {
     throw new Error('Failed to inline styles.css / app.js — check the link/script tags in src/index.html');
   }
 
+  // Inject API_BASE before </head> so window.__API_BASE__ is available to the app script.
   if (apiBase) {
     src = src.replace('</head>', `<script>window.__API_BASE__='${apiBase}'</script></head>`);
   }
@@ -66,6 +68,10 @@ async function build() {
   const minified = await minify(src, MINIFY_OPTS);
   fs.writeFileSync(OUT, minified);
 
+  // ── 2. Copy PWA infrastructure (must stay as separate files) ──────────────────
+  // Version = content hash of what actually ships (built HTML + SW logic + manifest).
+  // Identical content → identical version → NO spurious update prompt on a rebuild.
+  // Only a real change to the app bumps the version and triggers the update banner.
   const swSource = fs.readFileSync(SW, 'utf8');
   const manifestSrc = fs.readFileSync(MANIFEST, 'utf8');
   const version = crypto.createHash('sha256')
@@ -79,6 +85,7 @@ async function build() {
   fs.copyFileSync(MANIFEST, path.join(OUT_DIR, 'manifest.webmanifest'));
   if (fs.existsSync(ICONS_DIR)) copyDir(ICONS_DIR, path.join(OUT_DIR, 'icons'));
 
+  // ── Report ────────────────────────────────────────────────────────────────────
   const srcSize = Buffer.byteLength(src, 'utf8');
   const outSize = Buffer.byteLength(minified, 'utf8');
   const pct = (((srcSize - outSize) / srcSize) * 100).toFixed(1);
