@@ -1,0 +1,15 @@
+# Render Blueprint — backend API only.
+# The frontend is hosted separately on GitHub Pages; this service answers /api/*.
+# Render injects PORT automatically; server.js reads process.env.PORT.
+services:
+  - type: web
+    name: combobox-api
+    runtime: node
+    plan: free
+    region: singapore          # closest free region for Asia; change if needed
+    buildCommand: npm ci && npm run build
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
