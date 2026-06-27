@@ -46,7 +46,10 @@ html,body{height:100%;overflow:hidden;background:var(--surf);color:var(--txt);
   opacity:0;pointer-events:none;transition:opacity .18s;padding-bottom:12px;background:var(--bg)}
 .view.on{opacity:1;pointer-events:all}
 #v-reader{padding-bottom:0;background:#000}
-#nav{height:var(--nav-total);padding:0 calc(8px + var(--sar)) 0 calc(8px + var(--sal));
+/* Reserve the home-bar inset as padding-bottom (not extra centred height),
+   so the tab icons/labels stay above the iOS home indicator while the bar
+   background still fills down to the physical screen edge. */
+#nav{height:var(--nav-total);padding:0 calc(8px + var(--sar)) var(--sab) calc(8px + var(--sal));
   background:var(--surf);border-top:1px solid var(--bdr);
   display:flex;flex-shrink:0;z-index:50}
 #nav.hide{display:none}
@@ -67,8 +70,8 @@ html,body{height:100%;overflow:hidden;background:var(--surf);color:var(--txt);
 /* ── Reader toolbar ── */
 #rtbar{position:fixed;bottom:0;left:0;right:0;background:rgba(17,17,17,.92);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  min-height:calc(54px + var(--sab));display:flex;align-items:center;gap:10px;
-  padding:10px calc(12px + var(--sar)) 10px calc(12px + var(--sal));
+  min-height:54px;display:flex;align-items:center;gap:10px;
+  padding:10px calc(12px + var(--sar)) calc(10px + var(--sab)) calc(12px + var(--sal));
   transform:translateY(100%);transition:transform .25s;z-index:200}
 #rtbar.show{transform:translateY(0)}
 #rt-prev,#rt-next{background:var(--surf2);color:var(--txt);border:1px solid var(--bdr);
