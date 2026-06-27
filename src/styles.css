@@ -11,8 +11,10 @@
   --sab:env(safe-area-inset-bottom,0px);
   --sal:env(safe-area-inset-left,0px);
   --sar:env(safe-area-inset-right,0px);
+  --nav-safe:min(var(--sab),10px);
+  --nav-total:calc(var(--nh) + var(--nav-safe));
 }
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
+html,body{height:100%;overflow:hidden;background:var(--surf);color:var(--txt);
   font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
   -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;user-select:none}
 
@@ -31,7 +33,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 #gate-err{color:var(--red);font-size:13px;min-height:18px;text-align:center}
 
 /* ── Layout ── */
-#shell{position:fixed;inset:0;display:flex;flex-direction:column}
+#shell{position:fixed;inset:0;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg)}
 #hdr{height:calc(var(--hh) + var(--sat));background:var(--surf);display:flex;align-items:center;
   padding:var(--sat) calc(8px + var(--sar)) 0 calc(8px + var(--sal));gap:8px;
   border-bottom:1px solid var(--bdr);z-index:50;flex-shrink:0}
@@ -40,12 +42,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   transform:translateY(-100%);transition:transform .25s;z-index:200}
 #hdr.reader.show{transform:translateY(0)}
-#content{flex:1;overflow:hidden;position:relative}
+#content{flex:1;min-height:0;overflow:hidden;position:relative}
 .view{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
-  opacity:0;pointer-events:none;transition:opacity .18s;padding-bottom:var(--nh);background:var(--bg)}
+  opacity:0;pointer-events:none;transition:opacity .18s;padding-bottom:12px;background:var(--bg)}
 .view.on{opacity:1;pointer-events:all}
 #v-reader{padding-bottom:0;background:#000}
-#nav{height:calc(var(--nh) + var(--sab));padding-bottom:var(--sab);
+#nav{height:var(--nav-total);padding:0 calc(8px + var(--sar)) var(--nav-safe) calc(8px + var(--sal));
   background:var(--surf);border-top:1px solid var(--bdr);
   display:flex;flex-shrink:0;z-index:50}
 #nav.hide{display:none}
@@ -59,7 +61,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 
 /* ── Nav buttons ── */
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;background:none;border:none;color:var(--txt3);cursor:pointer;font-size:10px;padding:6px 0}
+  min-height:var(--nh);gap:3px;background:none;border:none;color:var(--txt3);cursor:pointer;font-size:10px;padding:6px 0}
 .nb .ic{display:flex;align-items:center;justify-content:center}
 .nb.on{color:var(--red)}
 
@@ -67,7 +69,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 #rtbar{position:fixed;bottom:0;left:0;right:0;background:rgba(17,17,17,.92);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   display:flex;align-items:center;gap:10px;
-  padding:10px calc(12px + var(--sar)) calc(10px + var(--sab)) calc(12px + var(--sal));
+  padding:10px calc(12px + var(--sar)) calc(10px + var(--nav-safe)) calc(12px + var(--sal));
   transform:translateY(100%);transition:transform .25s;z-index:200}
 #rtbar.show{transform:translateY(0)}
 #rt-prev,#rt-next{background:var(--surf2);color:var(--txt);border:1px solid var(--bdr);
@@ -150,18 +152,19 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 .err-btn{background:var(--red);color:#fff;border:none;border-radius:20px;padding:9px 22px;font-size:14px;cursor:pointer;margin-top:6px}
 
 /* ── Toast ── */
-#toast{position:fixed;bottom:calc(var(--nh) + var(--sab) + 12px);left:50%;transform:translateX(-50%) translateY(16px);
+#toast{position:fixed;bottom:calc(var(--nav-total) + 12px);left:50%;transform:translateX(-50%) translateY(16px);
   background:var(--surf3);color:var(--txt);padding:9px 18px;border-radius:18px;font-size:13px;
   opacity:0;transition:all .25s;z-index:999;white-space:nowrap;pointer-events:none}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ── Update banner (PWA new-version prompt) ── */
-#update-bar{position:fixed;left:50%;bottom:calc(var(--nh) + var(--sab) + 12px);
-  transform:translateX(-50%) translateY(140%);transition:transform .3s;
+#update-bar{position:fixed;left:50%;bottom:calc(var(--nav-total) + 12px);
+  transform:translateX(-50%) translateY(140%);visibility:hidden;
+  transition:transform .3s,visibility .3s;
   display:flex;align-items:center;gap:12px;z-index:1000;
   background:var(--surf2);border:1px solid var(--bdr);border-radius:24px;
   padding:8px 8px 8px 18px;box-shadow:0 4px 20px rgba(0,0,0,.4);max-width:calc(100vw - 28px)}
-#update-bar.show{transform:translateX(-50%) translateY(0)}
+#update-bar.show{transform:translateX(-50%) translateY(0);visibility:visible}
 #update-txt{font-size:13px;color:var(--txt);white-space:nowrap}
 #update-btn{background:var(--red);color:#fff;border:none;border-radius:18px;
   padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
