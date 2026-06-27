@@ -32,7 +32,13 @@ html,body{height:100%;overflow:hidden;background:var(--surf);color:var(--txt);
 #gate-err{color:var(--red);font-size:13px;min-height:18px;text-align:center}
 
 /* ── Layout ── */
-#shell{position:fixed;inset:0;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg)}
+/* Status bar is opaque "black": iOS places the web view BELOW the status bar and
+   reports honest dimensions (innerHeight == usable height), so position:fixed;inset:0
+   fills exactly — no phantom bottom spacer. Do NOT use height:100vh here: under "black"
+   100vh overshoots the screen and pushes the bottom nav off-screen. (If the status bar
+   is ever switched back to "black-translucent" for an immersive look, this must become
+   height:100vh instead — the two models are not interchangeable.) */
+#shell{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--bg)}
 #hdr{height:calc(var(--hh) + var(--sat));background:var(--surf);display:flex;align-items:center;
   padding:var(--sat) calc(8px + var(--sar)) 0 calc(8px + var(--sal));gap:8px;
   border-bottom:1px solid var(--bdr);z-index:50;flex-shrink:0}
@@ -68,7 +74,7 @@ html,body{height:100%;overflow:hidden;background:var(--surf);color:var(--txt);
 .nb.on{color:var(--red)}
 
 /* ── Reader toolbar ── */
-#rtbar{position:fixed;bottom:0;left:0;right:0;background:rgba(17,17,17,.92);
+#rtbar{position:absolute;bottom:0;left:0;right:0;background:rgba(17,17,17,.92);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   min-height:54px;display:flex;align-items:center;gap:10px;
   padding:10px calc(12px + var(--sar)) calc(10px + var(--sab)) calc(12px + var(--sal));

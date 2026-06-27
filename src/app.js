@@ -509,7 +509,23 @@ window.applyUpdate = function(){
   }
 };
 
-if('serviceWorker' in navigator){
+// Dev/LAN testing: a cached service worker keeps serving stale code, which makes
+// "I changed it but the phone shows the old version" bugs. On localhost / private
+// LAN IPs we DISABLE the SW entirely and actively tear down any existing one + caches,
+// so every refresh shows the freshest source. Production keeps the SW (offline + updates).
+const IS_DEV_HOST =
+  ['localhost','127.0.0.1','0.0.0.0'].includes(location.hostname) ||
+  /^192\.168\./.test(location.hostname) ||
+  /^10\./.test(location.hostname) ||
+  /^172\.(1[6-9]|2\d|3[01])\./.test(location.hostname);
+
+if(IS_DEV_HOST){
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations()
+      .then(rs => rs.forEach(r => r.unregister())).catch(()=>{});
+  }
+  if(window.caches){ caches.keys().then(ks => ks.forEach(k => caches.delete(k))).catch(()=>{}); }
+} else if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').then(reg => {
       // A worker is already waiting (e.g. reopened the tab) → prompt immediately.
