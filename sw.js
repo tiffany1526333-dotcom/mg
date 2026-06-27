@@ -1,5 +1,5 @@
 /* Combobox service worker.
-   1782570126779 is replaced by build.js at build time with a unique stamp,
+   1782573264107 is replaced by build.js at build time with a unique stamp,
    so every deploy ships a byte-different sw.js → the browser detects an update
    → the app shows the 「发现新版本」 banner.
 
@@ -10,7 +10,7 @@
 */
 'use strict';
 
-const VERSION    = '1782570126779';
+const VERSION    = '1782573264107';
 const CACHE_NAME = 'combobox-' + VERSION;
 const APP_SHELL  = ['./', 'index.html', 'manifest.webmanifest',
                     'icons/icon-192.png', 'icons/icon-512.png'];
