@@ -165,6 +165,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);
 #update-txt{font-size:13px;color:var(--txt);white-space:nowrap}
 #update-btn{background:var(--red);color:#fff;border:none;border-radius:18px;
   padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
+#update-x{background:none;border:none;color:var(--txt2);cursor:pointer;
+  padding:4px;line-height:0;flex-shrink:0;display:flex;align-items:center}
+#update-x:active{color:var(--txt)}
 
 /* scrollbar */
 ::-webkit-scrollbar{width:2px}

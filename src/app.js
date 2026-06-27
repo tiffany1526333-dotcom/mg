@@ -492,6 +492,12 @@ function refreshUpdateBar(){
   if(bar) bar.classList.toggle('show', updatePending && S.view !== 'reader');
 }
 
+// Let the user hide the banner without updating; it returns on the next real version.
+window.dismissUpdate = function(){
+  updatePending = false;
+  refreshUpdateBar();
+};
+
 window.applyUpdate = function(){
   updatePending = false;
   refreshUpdateBar();
